@@ -12,14 +12,20 @@ This example may be copied under the terms of the MIT license, see the LICENSE f
 #include <Arduino.h>
 #include <WiFiUdp.h>
 #include <ArtnetWifi.h>
+#include <FastLED.h>
 
 #include "config.h"
+#include "wifi.h"
 #include "conserver.h"
 
 // Neopixel settings
-const int numLeds = 240; // change for your setup
-const int numberOfChannels = numLeds * 3; // Total number of channels you want to receive (1 led = 3 channels)
-const byte dataPin = 2;
+#define NUM_LEDS 51
+const int numLeds = NUM_LEDS;
+const int numberOfChannels = numLeds * 3;
+
+// pinout for LED strip
+const int pinSDA = D3;
+const int pinCLK = D2;
 
 // Artnet settings
 ArtnetWifi artnet;
@@ -31,58 +37,46 @@ bool universesReceived[maxUniverses];
 bool sendFrame = 1;
 int previousDataLength = 0;
 
-// connect to wifi – returns true if successful or false if not
-boolean ConnectWifi(void)
-{
-  boolean state = true;
-  int i = 0;
+CRGB leds[NUM_LEDS];
 
-  WiFi.begin(wifi_ssid, wifi_password);
-  Serial.print("Connecting to WiFi ");
-  Serial.println(wifi_ssid);
-  
-  // Wait for connection
-  Serial.print("Connecting");
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(200);
-    Serial.print(".");
-    if (i > 20){
-      state = false;
-      break;
-    }
-    i++;
-  }
-  if (state){
-    Serial.println("");
-    Serial.print("Connected to ");
-    Serial.println(wifi_ssid);
-    Serial.print("IP address: ");
-    Serial.println(WiFi.localIP());
-  } else {
-    Serial.println("");
-    Serial.println("Connection failed.");
-  }
-  
-  return state;
+void leds_init() {
+  FastLED.addLeds<APA102, pinSDA, pinCLK, BGR>(leds, NUM_LEDS);
+  Serial.println("Initializing LEDs...");
 }
 
-void initTest()
+void leds_test_pattern()
 {
-  // for (int i = 0 ; i < numLeds ; i++)
-  //   leds.setPixelColor(i, 127, 0, 0);
-  // leds.show();
-  // delay(500);
-  // for (int i = 0 ; i < numLeds ; i++)
-  //   leds.setPixelColor(i, 0, 127, 0);
-  // leds.show();
-  // delay(500);
-  // for (int i = 0 ; i < numLeds ; i++)
-  //   leds.setPixelColor(i, 0, 0, 127);
-  // leds.show();
-  // delay(500);
-  // for (int i = 0 ; i < numLeds ; i++)
-  //   leds.setPixelColor(i, 0, 0, 0);
-  // leds.show();
+  int waiting = 1000;
+
+  Serial.println(">>> LEDS test pattern");
+
+  for (int i = 0 ; i < numLeds ; i++)
+    leds[i] = CRGB(127, 0, 0);
+
+  FastLED.show();
+  delay(waiting);
+
+  for (int i = 0 ; i < numLeds ; i++)
+    leds[i] = CRGB(0, 127, 0);
+
+  FastLED.show();
+  delay(waiting);
+
+  for (int i = 0 ; i < numLeds ; i++)
+    leds[i] = CRGB( 0, 0, 127);
+  FastLED.show();
+  delay(waiting);
+
+  for (int i = 0 ; i < numLeds ; i++)
+    leds[i] = CRGB(127, 127, 127);
+
+  FastLED.show();
+  delay(waiting);
+
+  for (int i = 0 ; i < numLeds ; i++)
+    leds[i] = CRGB(0, 0, 0);
+  
+  FastLED.show();
 }
 
 void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data)
@@ -139,12 +133,13 @@ void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* d
 void setup()
 {
   Serial.begin(115200);
-  ConnectWifi();
+  wifi_connect();
   artnet.begin();
-  // leds.begin();
-  initTest();
 
   conserver_setup();
+
+  leds_init();
+  leds_test_pattern();
 
   // DMX packet callback
   artnet.setArtDmxCallback(onDmxFrame);
