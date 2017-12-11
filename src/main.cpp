@@ -1,9 +1,3 @@
-/*
-This example will receive multiple universes via Artnet and control a strip of ws2811 leds via 
-Adafruit's NeoPixel library: https://github.com/adafruit/Adafruit_NeoPixel
-This example may be copied under the terms of the MIT license, see the LICENSE file for details
-*/
-
 #if defined(ARDUINO_ARCH_ESP32)
 #include <WiFi.h>
 #else
@@ -18,7 +12,7 @@ This example may be copied under the terms of the MIT license, see the LICENSE f
 #include "wifi.h"
 #include "conserver.h"
 
-// Neopixel settings
+// LED settings
 #define NUM_LEDS 51
 const int numLeds = NUM_LEDS;
 const int numberOfChannels = numLeds * 3;
@@ -91,13 +85,6 @@ void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* d
   Serial.println();
 
   sendFrame = 1;
-  // set brightness of the whole strip 
-  if (universe == 15)
-  {
-    Serial.println("universe 15 reached!");
-    // leds.setBrightness(data[0]);
-    // leds.show();
-  }
 
   // Store which universe has got in
   if ((universe - startUniverse) < maxUniverses)
@@ -117,6 +104,10 @@ void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* d
   for (int i = 0; i < length / 3; i++)
   {
     int led = i + (universe - startUniverse) * (previousDataLength / 3);
+    
+    if (led < numLeds)
+      leds[led] = CRGB(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+    
     // if (led < numLeds)
     //   leds.setPixelColor(led, data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
   }
@@ -124,7 +115,7 @@ void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* d
   
   if (sendFrame)
   {
-    // leds.show();
+    FastLED.show();
     // Reset universeReceived to 0
     memset(universesReceived, 0, maxUniverses);
   }
