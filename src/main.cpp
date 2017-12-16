@@ -10,6 +10,7 @@
 
 #include "config.h"
 #include "wifi.h"
+//#include "persistence.h"
 #include "conserver.h"
 
 // LED settings
