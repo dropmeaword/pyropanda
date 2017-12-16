@@ -10,8 +10,10 @@
 
 #include "config.h"
 #include "wifi.h"
-//#include "persistence.h"
+#include "persistence.h"
 #include "conserver.h"
+
+#include "log.h"
 
 // LED settings
 #define NUM_LEDS 51
@@ -36,14 +38,14 @@ CRGB leds[NUM_LEDS];
 
 void leds_init() {
   FastLED.addLeds<APA102, pinSDA, pinCLK, BGR>(leds, NUM_LEDS);
-  Serial.println("Initializing LEDs...");
+  LOG("Initializing LEDs...");
 }
 
 void leds_test_pattern()
 {
   int waiting = 1000;
 
-  Serial.println(">>> LEDS test pattern");
+  LOG(">>> LEDS test pattern");
 
   for (int i = 0 ; i < numLeds ; i++)
     leds[i] = CRGB(127, 0, 0);
@@ -76,14 +78,14 @@ void leds_test_pattern()
 
 void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data)
 {
-  Serial.print(">> DMX [u: ");
-  Serial.print(universe);
-  Serial.print(" len: ");
-  Serial.print(length);
-  Serial.print(" seq: ");
-  Serial.print(sequence);
-  Serial.print("]");
-  Serial.println();
+  LOG(">> DMX [u: ");
+  LOG(universe);
+  LOG(" len: ");
+  LOG(length);
+  LOG(" seq: ");
+  LOG(sequence);
+  LOG("]");
+  LOG_NEW_LINE
 
   sendFrame = 1;
 
@@ -125,6 +127,10 @@ void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* d
 void setup()
 {
   Serial.begin(115200);
+
+  persistence_init();
+  persistence_load_settings();
+
   wifi_connect();
   artnet.begin();
 
