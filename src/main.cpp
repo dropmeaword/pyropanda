@@ -9,7 +9,7 @@
 #include <FastLED.h>
 
 #include "config.h"
-#include "wifi.h"
+#include "persistence.h"
 #include "conserver.h"
 
 // LED settings
@@ -21,6 +21,8 @@ const int numberOfChannels = numLeds * 3;
 const int pinSDA = D3;
 const int pinCLK = D2;
 
+CRGB leds[NUM_LEDS];
+
 // Artnet settings
 ArtnetWifi artnet;
 const int startUniverse = 0; // CHANGE FOR YOUR SETUP most software this is 1, some software send out artnet first universe as 0.
@@ -31,47 +33,13 @@ bool universesReceived[maxUniverses];
 bool sendFrame = 1;
 int previousDataLength = 0;
 
-CRGB leds[NUM_LEDS];
+// networking
+WiFiUDP Udp;                                // A UDP instance to let us send and receive packets over UDP
+// const IPAddress roothost(192, 168, 8, 100);
+IPAddress thisip;
 
-void leds_init() {
-  FastLED.addLeds<APA102, pinSDA, pinCLK, BGR>(leds, NUM_LEDS);
-  Serial.println("Initializing LEDs...");
-}
+int lumodot_id = -1;
 
-void leds_test_pattern()
-{
-  int waiting = 1000;
-
-  Serial.println(">>> LEDS test pattern");
-
-  for (int i = 0 ; i < numLeds ; i++)
-    leds[i] = CRGB(127, 0, 0);
-
-  FastLED.show();
-  delay(waiting);
-
-  for (int i = 0 ; i < numLeds ; i++)
-    leds[i] = CRGB(0, 127, 0);
-
-  FastLED.show();
-  delay(waiting);
-
-  for (int i = 0 ; i < numLeds ; i++)
-    leds[i] = CRGB( 0, 0, 127);
-  FastLED.show();
-  delay(waiting);
-
-  for (int i = 0 ; i < numLeds ; i++)
-    leds[i] = CRGB(127, 127, 127);
-
-  FastLED.show();
-  delay(waiting);
-
-  for (int i = 0 ; i < numLeds ; i++)
-    leds[i] = CRGB(0, 0, 0);
-  
-  FastLED.show();
-}
 
 void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data)
 {
@@ -119,6 +87,85 @@ void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* d
     // Reset universeReceived to 0
     memset(universesReceived, 0, maxUniverses);
   }
+}
+
+// connect to wifi – returns true if successful or false if not
+bool wifi_connect()
+{
+  boolean state = true;
+  int i = 0;
+
+  WiFi.begin(wifi_ssid, wifi_password);
+  Serial.print("Connecting to WiFi ");
+  Serial.println(wifi_ssid);
+  
+  // Wait for connection
+  Serial.print("Connecting");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(200);
+    Serial.print(".");
+    if (i > 20){
+      state = false;
+      break;
+    }
+    i++;
+  }
+  if (state){
+    Serial.println("");
+    Serial.print("Connected to ");
+    Serial.println(wifi_ssid);
+    Serial.print("IP address: ");
+    thisip = WiFi.localIP();
+    Serial.println( thisip );
+
+    // sensor ID is the last byte in the IP quad
+    lumodot_id = thisip[3];  
+  } else {
+    Serial.println("");
+    Serial.println("Connection failed.");
+  }
+  
+  return state;
+}
+
+void leds_init() {
+  FastLED.addLeds<APA102, pinSDA, pinCLK, BGR>(leds, NUM_LEDS);
+  Serial.println("Initializing LEDs...");
+}
+
+void leds_test_pattern()
+{
+  int waiting = 1000;
+
+  Serial.println(">>> LEDS test pattern");
+
+  for (int i = 0 ; i < numLeds ; i++)
+    leds[i] = CRGB(127, 0, 0);
+
+  FastLED.show();
+  delay(waiting);
+
+  for (int i = 0 ; i < numLeds ; i++)
+    leds[i] = CRGB(0, 127, 0);
+
+  FastLED.show();
+  delay(waiting);
+
+  for (int i = 0 ; i < numLeds ; i++)
+    leds[i] = CRGB( 0, 0, 127);
+  FastLED.show();
+  delay(waiting);
+
+  for (int i = 0 ; i < numLeds ; i++)
+    leds[i] = CRGB(127, 127, 127);
+
+  FastLED.show();
+  delay(waiting);
+
+  for (int i = 0 ; i < numLeds ; i++)
+    leds[i] = CRGB(0, 0, 0);
+  
+  FastLED.show();
 }
 
 void setup()
