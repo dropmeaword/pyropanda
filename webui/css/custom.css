@@ -1,10 +1,10 @@
 @font-face {
     font-family: "mononoki";
-    src: url("font/mononoki-regular.woff") format('woff');
+    src: url(font/mononoki-regular.woff) format('woff');
 }
 
 body {
-    font-family: "mononoki";
+    font-family: "mononoki", Fallback, sans-serif;
     margin: 0 auto;
     padding: 0 80px;
 }

@@ -1,0 +1,98 @@
+diff --git a/src/main.cpp b/src/main.cpp
+index ee0cadb..3b32645 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -9,7 +9,7 @@
+ #include <FastLED.h>
+ 
+ #include "config.h"
+-#include "persistence.h"
++//#include "persistence.h"
+ #include "conserver.h"
+ 
+ // LED settings
+@@ -172,20 +172,20 @@ void setup()
+ {
+   Serial.begin(115200);
+   wifi_connect();
+-  artnet.begin();
++  // artnet.begin();
+ 
+-  conserver_setup();
++  // conserver_setup();
+ 
+-  leds_init();
+-  leds_test_pattern();
++  // leds_init();
++  // leds_test_pattern();
+ 
+-  // DMX packet callback
+-  artnet.setArtDmxCallback(onDmxFrame);
++  // // DMX packet callback
++  // artnet.setArtDmxCallback(onDmxFrame);
+ }
+ 
+ void loop()
+ {
+   // we call the read function inside the loop
+-  artnet.read();
+-  conserver_loop();
++  // artnet.read();
++  // conserver_loop();
+ }
+\ No newline at end of file
+diff --git a/src/persistence.cpp b/src/persistence.cpp
+index 3c93ee7..69db214 100644
+--- a/src/persistence.cpp
++++ b/src/persistence.cpp
+@@ -1,6 +1,6 @@
+ #include <EEPROM.h>
+ #include <Arduino.h>
+-
++/*
+ #include "persistence.h"
+ #define VERSION 10
+ 
+@@ -50,4 +50,4 @@ void persistence_load_settings() {
+ }
+ 
+ 
+-
++*/
+diff --git a/src/persistence.h b/src/persistence.h
+index d35ce09..a2ab46f 100644
+--- a/src/persistence.h
++++ b/src/persistence.h
+@@ -1,6 +1,6 @@
+ #ifndef __PERSISTENCE_H__
+ #define __PERSISTENCE_H__
+-
++/*
+ #define EEPROM_SIZE 1024
+ 
+ struct config_t
+@@ -16,5 +16,5 @@ struct config_t
+     char cfg_mesh_prefix[32];
+     int cfg_mode; // 10 = client, 20 = ap, 30 = mesh
+ };
+-
++*/
+ #endif // __PERSISTENCE_H__
+\ No newline at end of file
+diff --git a/webui/css/custom.css b/webui/css/custom.css
+index 4b45889..cdba821 100644
+--- a/webui/css/custom.css
++++ b/webui/css/custom.css
+@@ -1,10 +1,10 @@
+ @font-face {
+     font-family: "mononoki";
+-    src: url("font/mononoki-regular.woff") format('woff');
++    src: url(font/mononoki-regular.woff) format('woff');
+ }
+ 
+ body {
+-    font-family: "mononoki";
++    font-family: "mononoki", Fallback, sans-serif;
+     margin: 0 auto;
+     padding: 0 80px;
+ }
