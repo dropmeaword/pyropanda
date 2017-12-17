@@ -65,6 +65,10 @@ void leds_test_pattern()
     leds[i] = CRGB( 0, 0, 127);
   FastLED.show();
   delay(waiting);
+
+  for (int i = 0 ; i < numLeds ; i++)
+    leds[i] = CRGB( 0, 0, 0);
+  FastLED.show();
 }
 
 void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data)
