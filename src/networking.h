@@ -4,7 +4,7 @@
 #include <DNSServer.h>
 #include <ESP8266mDNS.h>
 
-enum class WifiMode {
+enum WifiMode {
     CLIENT = 10,        // station node
     HYBRID_AP = 15,     // station + ap
     ACCESS_POINT = 20,  // ap only

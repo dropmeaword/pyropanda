@@ -63,7 +63,7 @@ bool wifi_connect_as_client(const char *ssid, const char *passw, int timeouts = 
     config.cfg_ip[3] = thisip[3];
   }
 
-  config.cfg_mode = 10; //(int)WifiMode.CLIENT;
+  config.cfg_mode = WifiMode::CLIENT;
 
   return succeeded;
 }
@@ -91,7 +91,7 @@ bool wifi_create_ap(const char *myssid) {
   Serial.print("AP IP address: ");
   Serial.println(WiFi.softAPIP());
 
-  config.cfg_mode = 20; //(int)WifiMode.ACCES_POINT;
+  config.cfg_mode = WifiMode::ACCESS_POINT;
 }
 
 /**

@@ -144,9 +144,16 @@ void setup()
 
 void loop()
 {
-  dnsServer.processNextRequest();
+  // @TODO at the moment we only need DNS when running in AP mode
+  // but DNS is also necessary for the mDNS entry to work, do we want
+  // mDNS over a tighter loop?
+  if( config.cfg_mode == WifiMode::ACCESS_POINT) {
+    dnsServer.processNextRequest();
+  }
 
   // we call the read function inside the loop
   artnet.read();
+
+  // this runs the webserver loop 
   conserver_loop();
 }

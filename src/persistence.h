@@ -3,6 +3,8 @@
 
 #define EEPROM_SIZE 1024
 
+#include "networking.h"
+
 struct config_t
 {
     byte cfg_version;
