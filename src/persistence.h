@@ -24,4 +24,6 @@ void persistence_clear();
 void persistence_save_settings();
 void persistence_load_settings();
 
+char *cfgutil_get_ip_address();
+
 #endif // __PERSISTENCE_H__

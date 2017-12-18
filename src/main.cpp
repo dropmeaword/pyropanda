@@ -123,6 +123,8 @@ void setup()
 {
   Serial.begin(115200);
 
+  pinMode(BUILTIN_LED, OUTPUT);
+
   persistence_init();
   persistence_load_settings();
 

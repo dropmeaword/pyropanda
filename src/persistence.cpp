@@ -8,6 +8,14 @@
 int position;
 config_t config;
 
+char tmpbuffer[16];
+
+
+char *cfgutil_get_ip_address() {
+    sprintf(tmpbuffer, "%d.%d.%d.%d", config.cfg_ip[0], config.cfg_ip[1], config.cfg_ip[2], config.cfg_ip[3]);
+    return tmpbuffer;
+}
+
 template <class T> int EEPROM_xwrite(int ee, const T& value)
 {
     const byte* p = (const byte*)(const void*)&value;
@@ -60,6 +68,15 @@ void persistence_clear() {
 void persistence_save_settings() {
     Serial.print("Saving config version "); Serial.print(VERSION); Serial.println(" on EEPROM");
     // set version of config format
+    config.cfg_net = 10;
+    config.cfg_subnet = 0;
+    //config.cfg_universes = {4, 5, 6};
+    strcpy(config.cfg_myssid, "ap_PYROPANDA");
+    strcpy(config.cfg_wifi_ssid, "CABO_VERDE");
+    strcpy(config.cfg_wifi_password, "12345678");
+    strcpy(config.cfg_mesh_prefix, "mm_");
+    
+    config.cfg_mode = 20;
     config.cfg_version = VERSION;
     int written = EEPROM_xwrite(0, config);
     Serial.print("Wrote "); Serial.print(written); Serial.print(" bytes"); Serial.println();
