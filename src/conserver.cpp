@@ -12,6 +12,8 @@
 #include "persistence.h"
 #include  "website.h"
 
+#include "log.h"
+
 ESP8266WebServer server( 80 );
 
 // String createPage(){
@@ -58,7 +60,8 @@ ESP8266WebServer server( 80 );
 
 void handle_config_get() {
 
-  Serial.println(">> GET CONFIG");
+  LOG(">> GET CONFIG");
+  LOG_NEW_LINE
 
   DynamicJsonBuffer jsonBuffer(4096);
   JsonObject &root = jsonBuffer.createObject();
@@ -68,7 +71,8 @@ void handle_config_get() {
   root["net"] = config.cfg_net;
   root["subnet"] = config.cfg_subnet;
   //root["universes"] = config.cfg_universes;
-  root["myssid"] = config.cfg_myssid;
+  root["my_ssid"] = config.cfg_my_ssid;
+  root["my_password"] = config.cfg_my_password;
   // root["wifi_ssid"] = config.cfg_wifi_ssid;
   // root["wifi_password"] = config.cfg_wifi_password;
   root["mesh_prefix"] = config.cfg_mesh_prefix;

@@ -71,7 +71,7 @@ void persistence_save_settings() {
     config.cfg_net = 10;
     config.cfg_subnet = 0;
     //config.cfg_universes = {4, 5, 6};
-    strcpy(config.cfg_myssid, "ap_PYROPANDA");
+    strcpy(config.cfg_my_ssid, "ap_PYROPANDA");
     strcpy(config.cfg_wifi_ssid, "CABO_VERDE");
     strcpy(config.cfg_wifi_password, "12345678");
     strcpy(config.cfg_mesh_prefix, "mm_");

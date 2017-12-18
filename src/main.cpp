@@ -9,7 +9,7 @@
 #include <FastLED.h>
 
 #include "config.h"
-#include "wifi.h"
+#include "networking.h"
 #include "persistence.h"
 #include "conserver.h"
 
@@ -41,13 +41,15 @@ CRGB leds[NUM_LEDS];
 void leds_init() {
   FastLED.addLeds<APA102, pinSDA, pinCLK, BGR>(leds, NUM_LEDS);
   LOG("Initializing LEDs...");
+  LOG_NEW_LINE
 }
 
 void leds_test_pattern()
 {
   int waiting = 1000;
 
-  LOG(">>> LEDS test pattern");
+  LOG(">>> pumping test pattern");
+  LOG_NEW_LINE
 
   for (int i = 0 ; i < numLeds ; i++)
     leds[i] = CRGB(127, 0, 0);
@@ -128,7 +130,7 @@ void setup()
   persistence_init();
   persistence_load_settings();
 
-  wifi_connect();
+  wifi_init();
   artnet.begin();
 
   conserver_setup();
@@ -142,6 +144,8 @@ void setup()
 
 void loop()
 {
+  dnsServer.processNextRequest();
+
   // we call the read function inside the loop
   artnet.read();
   conserver_loop();

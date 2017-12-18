@@ -3,7 +3,7 @@
 
 #define LOG_ENABLED
 
-#define wifi_ssid      "CABO_VERDE"
-#define wifi_password  "12345678"
+#define wifi_ssid      "interact"
+#define wifi_password  "30youngBOYSfromDELAWARE"
 
 #endif // __CONFIG_H__
