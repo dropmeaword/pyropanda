@@ -6,73 +6,20 @@
 #include <Arduino.h>
 #include <WiFiUdp.h>
 #include <ArtnetWifi.h>
-#include <FastLED.h>
 
 #include "config.h"
 #include "networking.h"
 #include "persistence.h"
 #include "conserver.h"
 
+#include "artnet.h"
+#include "ledstrip.h"
+
 #include "log.h"
 
-// LED settings
-#define NUM_LEDS 51
-const int numLeds = NUM_LEDS;
-const int numberOfChannels = numLeds * 3;
+int panda_id = -1;
 
-// pinout for LED strip
-const int pinSDA = D3;
-const int pinCLK = D2;
-
-// Artnet settings
-ArtnetWifi artnet;
-const int startUniverse = 0; // CHANGE FOR YOUR SETUP most software this is 1, some software send out artnet first universe as 0.
-
-// Check if we got all universes
-const int maxUniverses = numberOfChannels / 512 + ((numberOfChannels % 512) ? 1 : 0);
-bool universesReceived[maxUniverses];
-bool sendFrame = 1;
-int previousDataLength = 0;
-
-int lumodot_id = -1;
-
-CRGB leds[NUM_LEDS];
-
-void leds_init() {
-  FastLED.addLeds<APA102, pinSDA, pinCLK, BGR>(leds, NUM_LEDS);
-  LOG("Initializing LEDs...");
-  LOG_NEW_LINE
-}
-
-void leds_test_pattern()
-{
-  int waiting = 1000;
-
-  LOG(">>> pumping test pattern");
-  LOG_NEW_LINE
-
-  for (int i = 0 ; i < numLeds ; i++)
-    leds[i] = CRGB(127, 0, 0);
-
-  FastLED.show();
-  delay(waiting);
-
-  for (int i = 0 ; i < numLeds ; i++)
-    leds[i] = CRGB(0, 127, 0);
-
-  FastLED.show();
-  delay(waiting);
-
-  for (int i = 0 ; i < numLeds ; i++)
-    leds[i] = CRGB( 0, 0, 127);
-  FastLED.show();
-  delay(waiting);
-
-  for (int i = 0 ; i < numLeds ; i++)
-    leds[i] = CRGB( 0, 0, 0);
-  FastLED.show();
-}
-
+/*
 void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data)
 {
   LOG(">> DMX [u: ");
@@ -120,6 +67,7 @@ void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* d
     memset(universesReceived, 0, maxUniverses);
   }
 }
+*/
 
 void setup()
 {
@@ -131,15 +79,13 @@ void setup()
   persistence_load_settings();
 
   wifi_init();
-  artnet.begin();
+
+  artnet_init();
 
   conserver_setup();
 
-  leds_init();
-  leds_test_pattern();
-
-  // DMX packet callback
-  artnet.setArtDmxCallback(onDmxFrame);
+  ledstrip_init();
+  ledstrip_test_pattern();
 }
 
 void loop()
